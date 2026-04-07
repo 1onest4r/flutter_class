@@ -7,6 +7,16 @@ class SettingsManager {
 
   ThemeMode get currentTheme => appState.theme;
 
+  String get currentThemeTitle {
+    if (currentTheme == ThemeMode.dark) {
+      return 'Dark';
+    } else if (currentTheme == ThemeMode.light) {
+      return 'Light';
+    } else {
+      return 'System default';
+    }
+  }
+
   void setTheme(ThemeMode theme) {
     appState.setThemeMode(theme);
   }

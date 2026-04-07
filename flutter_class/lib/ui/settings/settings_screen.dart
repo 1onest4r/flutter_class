@@ -13,19 +13,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Settings')),
-      body: ListView(
-        children: [
-          ListTile(
-            title: Text('Theme'),
-            subtitle: Text('Light mode'),
-            onTap: () async {
-              final theme = await _showThemeDialog();
-            },
+    return ListenableBuilder(
+      listenable: manager.appState,
+      builder: (context, child) {
+        return Scaffold(
+          appBar: AppBar(title: Text('Settings')),
+          body: ListView(
+            children: [
+              ListTile(
+                title: Text('Theme'),
+                subtitle: Text(manager.currentThemeTitle),
+                onTap: () async {
+                  final theme = await _showThemeDialog();
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
