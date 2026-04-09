@@ -2,14 +2,14 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_demo/firebase_options.dart';
+// import 'package:flutter_demo/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Auth {
   Future<void> init() async {
     if (!Platform.isAndroid) return;
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      // options: DefaultFirebaseOptions.currentPlatform,
     );
   }
 

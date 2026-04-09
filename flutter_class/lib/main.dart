@@ -8,6 +8,7 @@ import 'package:flutter_demo/ui/demos/3_state_managment/state_management_demo.da
 import 'package:flutter_demo/ui/demos/4_user_login/login_screen.dart';
 import 'package:flutter_demo/ui/demos/5_sqlite/database.dart';
 import 'package:flutter_demo/ui/demos/5_sqlite/sqlite_demo.dart';
+import 'package:flutter_demo/ui/demos/6_networking/networking_demo.dart';
 import 'package:flutter_demo/ui/settings/settings_screen.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'ui/demos/1_dart/dart_demo_screen.dart';
@@ -19,7 +20,7 @@ Future<void> main() async {
   // TODO: fix firebase
   // await getIt<Auth>().init();
   await getIt<AppState>().init();
-  await getIt<DatabaseHelper>().init();
+  // await getIt<DatabaseHelper>().init();
   runApp(const MyApp());
 }
 
@@ -135,10 +136,16 @@ class HomeScreen extends StatelessWidget {
           ListTile(
             title: const Text("5. SQLite"),
             leading: const Icon(Icons.code),
+            onTap: () {},
+          ),
+
+          ListTile(
+            title: const Text("6. Networking"),
+            leading: const Icon(Icons.code),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SqliteDemo()),
+                MaterialPageRoute(builder: (context) => const NetworkingDemo()),
               );
             },
           ),
