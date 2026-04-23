@@ -13,16 +13,16 @@ class DatabaseHelper {
 
   late Database _database;
 
-  Future<void> init() async {
-    final folder = await getApplicationDocumentsDirectory();
-    final path = join(folder.path, _dbName);
-    _database = await openDatabase(
-      path,
-      version: _dbVersion,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
-  }
+  // Future<void> init() async {
+  //   final folder = await getApplicationDocumentsDirectory();
+  //   final path = join(folder.path, _dbName);
+  //   _database = await openDatabase(
+  //     path,
+  //     version: _dbVersion,
+  //     onCreate: _onCreate,
+  //     onUpgrade: _onUpgrade,
+  //   );
+  // }
 
   Future<void> _onCreate(Database db, int version) async {
     final sql =

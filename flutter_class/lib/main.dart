@@ -10,8 +10,9 @@ import 'package:flutter_demo/ui/demos/5_sqlite/database.dart';
 import 'package:flutter_demo/ui/demos/5_sqlite/sqlite_demo.dart';
 import 'package:flutter_demo/ui/demos/6_networking/networking_demo.dart';
 import 'package:flutter_demo/ui/demos/7_testing/calculator_demo.dart';
+import 'package:flutter_demo/ui/demos/8_profiling/profiling_demo.dart';
+import 'package:flutter_demo/ui/demos/9_painting/painting_demo.dart';
 import 'package:flutter_demo/ui/settings/settings_screen.dart';
-import 'package:sqflite/sqlite_api.dart';
 import 'ui/demos/1_dart/dart_demo_screen.dart';
 
 Future<void> main() async {
@@ -137,7 +138,12 @@ class HomeScreen extends StatelessWidget {
           ListTile(
             title: const Text("5. SQLite"),
             leading: const Icon(Icons.code),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SqliteDemo()),
+              );
+            },
           ),
 
           ListTile(
@@ -157,7 +163,29 @@ class HomeScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const TestingDemo()),
+                MaterialPageRoute(builder: (context) => const CalculatorDemo()),
+              );
+            },
+          ),
+
+          ListTile(
+            title: const Text("8. Profiling"),
+            leading: const Icon(Icons.code),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilingDemo()),
+              );
+            },
+          ),
+
+          ListTile(
+            title: const Text("9. Painting"),
+            leading: const Icon(Icons.code),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const PaintingDemo()),
               );
             },
           ),
