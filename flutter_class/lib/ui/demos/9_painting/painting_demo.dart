@@ -1,6 +1,9 @@
 import 'dart:ui' as ui;
-
+import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class PaintingDemo extends StatefulWidget {
   const PaintingDemo({super.key});
@@ -13,15 +16,22 @@ class _PaintingDemoState extends State<PaintingDemo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(),
+      // body: Center(
+      //   child: Container(
+      //     // color: Colors.cyan,
+      //     child: ProgressBar(
+      //       barColor: Colors.blue,
+      //       thumbColor: Colors.red,
+      //       thumbSize: 20.0,
+      //     ),
+      //   ),
+      // ),
       body: Center(
         child: Container(
-          color: Colors.white,
-          child: ProgressBar(
-            barColor: Colors.blue,
-            thumbColor: Colors.red,
-            thumbSize: 20.0,
-          ),
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          child: CustomPaint(size: Size(300, 300), painter: MyPainter()),
         ),
       ),
     );
@@ -32,25 +42,21 @@ class MyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path()
-      ..moveTo(70, 70)
-      ..lineTo(140, 140)
-      ..moveTo(140, 140)
-      ..lineTo(210, 70)
-      ..moveTo(210, 70)
-      ..lineTo(210, 210)
-      ..moveTo(210, 210)
-      ..lineTo(70, 210)
-      ..moveTo(70, 210)
-      ..lineTo(70, 70);
+      ..moveTo(0, 0)
+      ..lineTo(0, 0)
+      ..quadraticBezierTo(50, 200, 100, 100);
     final paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
     canvas.drawPath(path, paint);
-    final fillPaint = Paint()
+    final pointMode = ui.PointMode.points;
+    final points = [Offset(200, 50), Offset(0, 0), Offset(100, 100)];
+    final paintPoints = Paint()
       ..color = Colors.yellow
-      ..style = PaintingStyle.fill;
-    canvas.drawShadow(path, fillPaint.color, 5.0, true);
+      ..strokeWidth = 16
+      ..strokeCap = StrokeCap.round;
+    canvas.drawPoints(pointMode, points, paintPoints);
   }
 
   @override
@@ -74,14 +80,7 @@ class ProgressBar extends LeafRenderObjectWidget {
   @override
   RenderProgressBar createRenderObject(BuildContext context) {
     return RenderProgressBar(
-      barColor: barColor,class ProgressBar extends LeafRenderObjectWidget {
-  @override
-  RenderProgressBar createRenderObject(...) {}
-  @override
-  void updateRenderObject(...) {}
-  @override
-  void debugFillProperties(...) {}
-}
+      barColor: barColor,
       thumbColor: thumbColor,
       thumbSize: thumbSize,
     );
@@ -112,15 +111,30 @@ class RenderProgressBar extends RenderBox {
     required Color barColor,
     required Color thumbColor,
     required double thumbSize,
-  })  : _barColor = barColor,
-        _thumbColor = thumbColor,
-        _thumbSize = thumbSize;
+  }) : _barColor = barColor,
+       _thumbColor = thumbColor,
+       _thumbSize = thumbSize {
+    // initialize the gesture recognizer
+    _drag = HorizontalDragGestureRecognizer()
+      ..onStart = (DragStartDetails details) {
+        _updateThumbPosition(details.localPosition);
+      }
+      ..onUpdate = (DragUpdateDetails details) {
+        _updateThumbPosition(details.localPosition);
+      };
+  }
+
+  void _updateThumbPosition(Offset localPosition) {
+    var dx = localPosition.dx.clamp(0, size.width);
+    _currentThumbValue = dx / size.width;
+    markNeedsPaint();
+    markNeedsSemanticsUpdate();
+  }
 
   Color get barColor => _barColor;
   Color _barColor;
   set barColor(Color value) {
-    if (_barColor == value) 
-      return;
+    if (_barColor == value) return;
     _barColor = value;
     markNeedsPaint();
   }
@@ -128,8 +142,7 @@ class RenderProgressBar extends RenderBox {
   Color get thumbColor => _thumbColor;
   Color _thumbColor;
   set thumbColor(Color value) {
-    if (_thumbColor == value) 
-      return;
+    if (_thumbColor == value) return;
     _thumbColor = value;
     markNeedsPaint();
   }
@@ -137,8 +150,7 @@ class RenderProgressBar extends RenderBox {
   double get thumbSize => _thumbSize;
   double _thumbSize;
   set thumbSize(double value) {
-    if (_thumbSize == value) 
-      return;
+    if (_thumbSize == value) return;
     _thumbSize = value;
     markNeedsLayout();
   }
@@ -147,6 +159,7 @@ class RenderProgressBar extends RenderBox {
   void performLayout() {
     size = computeDryLayout(constraints);
   }
+
   @override
   Size computeDryLayout(BoxConstraints constraints) {
     final desiredWidth = constraints.maxWidth;
@@ -156,12 +169,53 @@ class RenderProgressBar extends RenderBox {
   }
 
   static const _minDesiredWidth = 100.0;
+
   @override
   double computeMinIntrinsicWidth(double height) => _minDesiredWidth;
+
   @override
   double computeMaxIntrinsicWidth(double height) => _minDesiredWidth;
+
   @override
   double computeMinIntrinsicHeight(double width) => thumbSize;
+
   @override
   double computeMaxIntrinsicHeight(double width) => thumbSize;
+
+  double _currentThumbValue = 0.5;
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final canvas = context.canvas;
+    canvas.save();
+    canvas.translate(offset.dx, offset.dy);
+
+    // paint bar
+    final barPaint = Paint()
+      ..color = barColor
+      ..strokeWidth = 5;
+    final point1 = Offset(0, size.height / 2);
+    final point2 = Offset(size.width, size.height / 2);
+    canvas.drawLine(point1, point2, barPaint);
+
+    // paint thumb
+    final thumbPaint = Paint()..color = thumbColor;
+    final thumbDx = _currentThumbValue * size.width;
+    final center = Offset(thumbDx, size.height / 2);
+    canvas.drawCircle(center, thumbSize / 2, thumbPaint);
+    canvas.restore();
+  }
+
+  late HorizontalDragGestureRecognizer _drag;
+
+  @override
+  bool hitTestSelf(Offset position) => true;
+
+  @override
+  void handleEvent(PointerEvent event, BoxHitTestEntry entry) {
+    assert(debugHandleEvent(event, entry));
+    if (event is PointerDownEvent) {
+      _drag.addPointer(event);
+    }
+  }
 }
